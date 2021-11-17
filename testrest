@@ -1,0 +1,155 @@
+## Use in VSCode. Required extension : humao.rest-client
+
+## How to use: 
+## Define the variables e.g. host
+## Upload the examples if needed
+
+@host = http://hapi.fhir.org/baseR4
+//@host = http://test.fhir.org/r4
+//@host = https://server.fire.ly/r4
+
+### See if host is alive
+GET {{host}}/metadata HTTP/1.1
+
+
+### GET all patients
+GET {{host}}/Patient
+
+### GET all Observations
+GET {{host}}/Observation
+
+### GET all Observations
+GET {{host}}/Observation?_sort=date
+
+
+### GET a specific Patient using the id
+GET {{host}}/Patient/1545788
+
+
+### GET a specific patient by SEARCHING using the ID
+GET {{host}}/Patient?_id=1545788
+
+### POST search 
+POST {{host}}/Patient/_search HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+_id=2081525
+
+
+### Search for Observation for a specific patient - NOK
+GET {{host}}/Observation?subject=Patient/2081525
+
+
+### POST Search for Observation for a specific patient - NOK
+POST {{host}}/Observation/_search HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+subject=2081525
+
+
+
+
+
+### Search Patient by name
+
+POST {{host}}/Patient/_search HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+name=Trinh
+### Search Patient by name 2
+
+GET {{host}}/Patient/?name="Beutlin"
+
+### Search Patient by birth date
+
+
+GET  {{host}}/Patient?birthdate=eq1991-05-07
+
+### Search Patient by marital status
+
+GET {{host}}/Patient?_maritalStatus=M
+
+### Search Patient by marital status 2
+
+
+GET {{host}}/Patient?_maritalStatus=http://terminology.hl7.org/CodeSystem/v3-MaritalStatus|U
+
+###Search Patient by gender
+
+GET {{host}}/Patient?gender=male
+
+### Search Patient by gender (NOT)
+
+GET {{host}}/Patient?gender:not=male
+
+
+### Search Medication Request for a certain Patient
+
+GET {{host}}/MedicationRequest?subject=Patient/5
+
+
+#### 
+### Search observation for a given patient - literal reference (Patient/xxx)
+GET {{host}}/Patient/1545788
+### Search observation for a given patient - logical reference (patient.identifier=xxxx)
+GET {{host}}/Patient?_id=1545788
+
+### Return a JSON response (?format=json)
+GET {{host}}/Patient/1545788?_format=json
+
+### Return a XML response (?format=xml)
+GET {{host}}/Patient/1545788?_format=xml
+
+### Return only summary (_summary)
+GET {{host}}/Patient?_summary=true
+
+### Return only certain elements (_elements)
+GET {{host}}/Patient?_elements=identifier,active,link
+
+### Sort search results
+GET {{host}}/Patient?_sort=-birthdate,name
+
+### search: Return only 10 results, then next 10 results
+GET {{host}}/Patient?_sort=-birthdate,name&_count=10
+
+### Free text search
+GET {{host}}/Patient?given:contains=eve
+GET {{host}}/Patient?given:exact=Eve
+
+### search chaining, reverse chaining
+#chaining
+GET {{host}}/DiagnosticReport?subject:Patient.name=Maria
+
+# reverse Chaining
+GET {{host}}/Patient?_has:MedicationRequest:subject:intent=order
+### search using _include, _revinclude
+#### _include
+GET {{host}}/MedicationRequest?_include=MedicationRequest:patient
+#### _revinclude with id
+GET {{host}}/Patient?_id=5&_revinclude=Observation:subject
+#### _revinclude without id
+GET {{host}}/Patient?_revinclude=Observation:subject
+
+### search using _contained
+GET {{host}}/Medication?_contained=true
+
+### search types (tokens, etc)
+#### Search Patient by gender
+GET {{host}}/Patient?gender=male
+#### Search Patient by gender (NOT)
+GET {{host}}/Patient?gender:not=male
+
+### search operators: search patients above 65
+GET {{host}}/Patient?birthdate=lt1956-11-03
+
+### todo
+GET {{host}}/Observation?subject=Patient/23
+
+
+GET {{host}}/Observation?_text=glucose
+
+### teste
+POST {{host}}/Patient/$graphql HTTP/1.1
+Content-Type: application/json
+
+{"query":" { \n   Patient(id: example) { id, active } \n }","variables":{}}
